@@ -1,0 +1,19 @@
+{
+  "repository_role": "public clean-room quant research toolkit",
+  "status": "toolkit_foundation",
+  "latest_public_claim": "Provides tested utilities for market-panel validation, leakage checks, Rank IC diagnostics, turnover, cost-aware top-quantile return, and factor metadata registration.",
+  "evidence_level": "synthetic_demo_only",
+  "private_material_excluded": [
+    "employer code",
+    "private datasets",
+    "credentials",
+    "raw experiment logs",
+    "production trading claims"
+  ],
+  "next_evidence_steps": [
+    "wire to public point-in-time sample data",
+    "add walk-forward split protocol",
+    "add neutralization and exposure diagnostics",
+    "add GitHub Pages report demo"
+  ]
+}
