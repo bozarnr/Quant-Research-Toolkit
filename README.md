@@ -4,6 +4,10 @@ Small utilities for checking factor-research data before any result is allowed t
 
 这个仓库放的是公开版工具层：先确认数据和诊断口径，再谈研究结论。当前 demo 只用合成数据，不包含私有数据、雇主代码、实盘结果或可交易承诺。
 
+## Showcase
+
+- [Example Diagnostics Report](reports/example-diagnostics.md): a compact demo table with Rank IC, turnover, gross return, net return, and verdict.
+
 ## Related repos
 
 - [AI-Alpha-Research-Lab](https://github.com/bozarnr/AI-Alpha-Research-Lab): formula search, evaluation, and rejection gates.
