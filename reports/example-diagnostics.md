@@ -7,9 +7,11 @@ This public demo is intentionally synthetic. It shows the research workflow shap
 - `MarketPanelContract` validates a point-in-time market panel and rejects obvious leakage fields.
 - `FactorRegistry` records factor lineage, input fields, and point-in-time rules.
 - `evaluate_factor` reports rank IC, turnover, gross return, net return, and a rejection verdict when costs overwhelm the demo signal.
+- `neutralize_cross_section` residualizes factors against style or risk exposures per date.
+- `factor_correlation_matrix` and `find_redundant_factor_pairs` flag crowded or duplicate factor families.
 - `DataManifest` records dataset shape, identity columns, and known limitations for reproducible handoff.
 - `build_walk_forward_splits` and `apply_split` create rolling train/test windows with strict train-before-test ordering.
 
 ## Why It Matters
 
-The useful signal for recruiters is not that the synthetic factor is profitable. The useful signal is that the project treats alpha work as a research system: data contract first, leakage checks first, walk-forward evaluation first, and rejection reasons preserved instead of hidden.
+The useful signal for recruiters is not that the synthetic factor is profitable. The useful signal is that the project treats alpha work as a research system: data contract first, leakage checks first, exposure neutralization, family-redundancy checks, walk-forward evaluation, and rejection reasons preserved instead of hidden.

@@ -1,29 +1,28 @@
 # Quant Research Toolkit
 
-Small utilities for checking factor-research data before any result is allowed to sound impressive. The package focuses on panel contracts, leakage checks, walk-forward splits, dataset manifests, Rank IC, turnover, and cost-aware top-quantile return.
+Clean-room utilities for time-safe factor research. This repository is a public,
+educational slice of a broader quant-research workflow: it keeps the parts that
+are useful to inspect on GitHub while excluding employer code, private data,
+credentials, and raw experiment logs.
 
-## Showcase
+## What it shows
 
-- [Example Diagnostics Report](reports/example-diagnostics.md): a compact demo with Rank IC, turnover, gross return, net return, rejection verdict, walk-forward split checks, and data manifest boundaries.
+- Market-panel validation: sorted `date`/`asset` panels, required columns, and
+  explicit feature/label separation.
+- Leakage guardrails: labels and future-looking fields cannot enter the feature
+  set.
+- First-pass factor diagnostics: cross-sectional Rank IC, coverage, turnover,
+  and top-quantile gross/net return.
+- Exposure neutralization: per-date residualization against style/risk fields,
+  with before/after exposure-correlation diagnostics.
+- Factor family hygiene: average cross-sectional correlation matrices and
+  redundant-pair flags for crowded factor families.
+- Factor registry: small metadata contracts for point-in-time rules, family,
+  data requirements, and status.
+- Deterministic demo: synthetic data only, intended as a smoke test rather than
+  evidence of a tradable strategy.
 
-## Related repos
-
-- [AI-Alpha-Research-Lab](https://github.com/bozarnr/AI-Alpha-Research-Lab): formula search, evaluation, and rejection gates.
-- [Paper-Alpha-Replications](https://github.com/bozarnr/Paper-Alpha-Replications): replication notes with claim ceilings.
-- [Quant-Research-Toolkit](https://github.com/bozarnr/Quant-Research-Toolkit): reusable checks for factor panels and diagnostics.
-- [Strategy-Game-Agents](https://github.com/bozarnr/Strategy-Game-Agents): repeated-choice experiments and baseline agents.
-
-## What is here
-
-- Market-panel validation: sorted `date`/`asset`, required columns, and feature/label separation.
-- Leakage guardrails: labels and future-looking fields cannot enter the feature set.
-- Walk-forward evaluation helpers: strict train-before-test windows and panel slicing.
-- Data manifest helper: source, row count, columns, identity fields, and known limitations.
-- First-pass diagnostics: Rank IC, coverage, turnover, and top-quantile gross/net return.
-- Factor registry metadata: family, input fields, point-in-time rule, and status.
-- Deterministic synthetic demo with a conservative verdict.
-
-## Run
+## Quick Start
 
 ```powershell
 python -m pip install -e .
@@ -31,34 +30,53 @@ python -m quant_toolkit.demo
 python -m unittest discover -s tests -v
 ```
 
+Expected demo behavior: the toy signal produces a diagnostics table and a
+conservative verdict. The verdict is deliberately bounded by cost-aware
+performance and sample-size checks.
+
 ## Minimal API
 
 ```python
-from quant_toolkit import (
-    DataManifest,
-    MarketPanelContract,
-    build_walk_forward_splits,
-    apply_split,
-    evaluate_factor,
-)
+from quant_toolkit.contracts import MarketPanelContract
+from quant_toolkit.correlation import factor_correlation_matrix, find_redundant_factor_pairs
+from quant_toolkit.metrics import evaluate_factor
+from quant_toolkit.neutralization import diagnose_neutralization, neutralize_cross_section
+from quant_toolkit.registry import FactorRegistry, FactorSpec
 
-contract = MarketPanelContract(feature_cols=["momentum_5d"])
+contract = MarketPanelContract(
+    date_col="date",
+    asset_col="asset",
+    label_col="label_ret_1d",
+    feature_cols=["momentum_5d"],
+)
 contract.validate(panel)
 
-manifest = DataManifest.from_panel(panel, source="synthetic-public-demo")
-split = build_walk_forward_splits(panel["date"], train_window=20, test_window=5)[0]
-train, test = apply_split(panel, split)
-
 diagnostics = evaluate_factor(
-    test,
+    panel,
     factor_col="momentum_5d",
     label_col="label_ret_1d",
     date_col="date",
     asset_col="asset",
     transaction_cost_bps=30,
 )
+
+panel["momentum_5d_neutralized"] = neutralize_cross_section(
+    panel,
+    value_col="momentum_5d",
+    exposure_cols=["size", "volatility"],
+)
+neutralization_report = diagnose_neutralization(
+    panel,
+    value_col="momentum_5d",
+    exposure_cols=["size", "volatility"],
+    neutralized_col="momentum_5d_neutralized",
+)
+
+corr = factor_correlation_matrix(panel, ["momentum_5d", "reversal_5d", "quality"])
+crowded_pairs = find_redundant_factor_pairs(corr, threshold=0.85)
 ```
 
-## Evidence boundary
+## Evidence Boundary
 
-See [evidence/validation-boundary.md](evidence/validation-boundary.md). This is a toolkit foundation, not a production backtest.
+See [evidence/validation-boundary.md](evidence/validation-boundary.md). The
+current repository is a public toolkit foundation, not a production backtest.
