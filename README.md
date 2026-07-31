@@ -5,6 +5,15 @@ educational slice of a broader quant-research workflow: it keeps the parts that
 are useful to inspect on GitHub while excluding employer code, private data,
 credentials, and raw experiment logs.
 
+## Public Research Stack
+
+This repository is one part of a public AI-quant portfolio:
+
+- [AI Alpha Research Lab](https://github.com/bozarnr/eee): formula-alpha research with strict promotion gates.
+- [Paper Alpha Replications](https://github.com/bozarnr/paper-library): evidence-first paper replication ledger.
+- [Quant Research Toolkit](https://github.com/bozarnr/experiment): reusable time-safe factor diagnostics.
+- [Strategy Game Agents](https://github.com/bozarnr/behavioral-finance-experiment): behavioral experiment tooling plus strategy-agent simulation.
+
 ## What it shows
 
 - Market-panel validation: sorted `date`/`asset` panels, required columns, and
