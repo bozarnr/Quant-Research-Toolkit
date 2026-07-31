@@ -80,3 +80,5 @@ crowded_pairs = find_redundant_factor_pairs(corr, threshold=0.85)
 
 See [evidence/validation-boundary.md](evidence/validation-boundary.md). The
 current repository is a public toolkit foundation, not a production backtest.
+The disclosure boundary is recorded in [DISCLOSURE.md](DISCLOSURE.md), and
+`sample_data/market_panel_sample.csv` is a synthetic schema fixture.
