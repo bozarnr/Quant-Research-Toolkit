@@ -1,12 +1,10 @@
 # Quant Research Toolkit
 
-Small utilities for checking factor-research data before any result is allowed to sound impressive. The package focuses on panel contracts, leakage checks, Rank IC, turnover, and cost-aware top-quantile return.
-
-这个仓库放的是公开版工具层：先确认数据和诊断口径，再谈研究结论。当前 demo 只用合成数据，不包含私有数据、雇主代码、实盘结果或可交易承诺。
+Small utilities for checking factor-research data before any result is allowed to sound impressive. The package focuses on panel contracts, leakage checks, walk-forward splits, dataset manifests, Rank IC, turnover, and cost-aware top-quantile return.
 
 ## Showcase
 
-- [Example Diagnostics Report](reports/example-diagnostics.md): a compact demo table with Rank IC, turnover, gross return, net return, and verdict.
+- [Example Diagnostics Report](reports/example-diagnostics.md): a compact demo with Rank IC, turnover, gross return, net return, rejection verdict, walk-forward split checks, and data manifest boundaries.
 
 ## Related repos
 
@@ -19,6 +17,8 @@ Small utilities for checking factor-research data before any result is allowed t
 
 - Market-panel validation: sorted `date`/`asset`, required columns, and feature/label separation.
 - Leakage guardrails: labels and future-looking fields cannot enter the feature set.
+- Walk-forward evaluation helpers: strict train-before-test windows and panel slicing.
+- Data manifest helper: source, row count, columns, identity fields, and known limitations.
 - First-pass diagnostics: Rank IC, coverage, turnover, and top-quantile gross/net return.
 - Factor registry metadata: family, input fields, point-in-time rule, and status.
 - Deterministic synthetic demo with a conservative verdict.
@@ -34,14 +34,23 @@ python -m unittest discover -s tests -v
 ## Minimal API
 
 ```python
-from quant_toolkit.contracts import MarketPanelContract
-from quant_toolkit.metrics import evaluate_factor
+from quant_toolkit import (
+    DataManifest,
+    MarketPanelContract,
+    build_walk_forward_splits,
+    apply_split,
+    evaluate_factor,
+)
 
 contract = MarketPanelContract(feature_cols=["momentum_5d"])
 contract.validate(panel)
 
+manifest = DataManifest.from_panel(panel, source="synthetic-public-demo")
+split = build_walk_forward_splits(panel["date"], train_window=20, test_window=5)[0]
+train, test = apply_split(panel, split)
+
 diagnostics = evaluate_factor(
-    panel,
+    test,
     factor_col="momentum_5d",
     label_col="label_ret_1d",
     date_col="date",
